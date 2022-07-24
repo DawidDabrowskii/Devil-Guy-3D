@@ -7,7 +7,10 @@ public class PlayerMovement : MonoBehaviour
     Rigidbody rb;
     [SerializeField] float movementSpeed = 6f;
     [SerializeField] float Jumpforce = 5f;
+    [SerializeField] Transform groundCheck;
+    [SerializeField] LayerMask ground;
 
+    public Animator anim;
     // Przy 'void Start' wzywamy rb, aby pozniej za kazdym razem nie powtarzac calosci
     private void Start()
     { 
@@ -21,12 +24,46 @@ public class PlayerMovement : MonoBehaviour
         float verticalInput = Input.GetAxis("Vertical");
 
         rb.velocity = new Vector3 (horizontalInput * movementSpeed, rb.velocity.y, verticalInput * movementSpeed);
+
+
+        // uruchomienie animacji biegu, gdy jest input
+
+        anim.SetFloat("Speed", Mathf.Abs(horizontalInput));
         
-        // skok gracza
-        if (Input.GetButton("Jump"))
+        if(Input.GetButton("Vertical"))
         {
-            rb.velocity = new Vector3(rb.velocity.x, Jumpforce, rb.velocity.z);
+            anim.SetFloat("Speed", 1f);
+        }
+
+        // skok gracza
+        if (Input.GetButton("Jump") && IsGrounded())
+        {
+            Jump();
         }
     }
 
+    // Tworzymy metode skoku, aby bylo czytelniej/latwiej i szybciej przywolac
+    private void Jump()
+    {
+        rb.velocity = new Vector3(rb.velocity.x, Jumpforce, rb.velocity.z);
+    }
+
+    // W przypadku kolizji z glowa 'enemy' chcemy, aby caly obiekt byl zniszczony, nie tylko glowa i przywolujemy skok, aby po uderzeniu w glowe 'enemy' wykonac skok
+    private void OnCollisionEnter(Collision collision)
+    {
+        if(collision.gameObject.CompareTag("EnemyHead"))
+        {
+            Destroy(collision.transform.parent.gameObject);
+            Jump();
+        }
+
+    }
+
+    /* Czy gracz jest 'grounded', aby gracz mogl skakac tylko w przypadku, gdy dotyka podloza (LayerMask = 'ground'). Tworzymy 'sphere',
+    przez ktora bedziemy to sprawdzac. Gdy gracz jest w powietrzu, nie bedzie w stanie skoczyc po raz kolejny*/
+
+    bool IsGrounded()
+    {
+        return Physics.CheckSphere(groundCheck.position, 0.1f, ground);
+    }
 }
