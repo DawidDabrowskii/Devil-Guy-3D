@@ -7,6 +7,7 @@ using UnityEngine.SceneManagement;
 public class PlayerLife : MonoBehaviour
 {
     bool dead = false;
+    [SerializeField] AudioSource deathSound;
 
     // Gdy gracz upadnie z platformy, tj. pozycja bedzie ponizej -15.5 uruchomic metode 'die'
     private void Update()
@@ -35,6 +36,7 @@ public class PlayerLife : MonoBehaviour
     {
         Invoke(nameof(ReloadLevel), 1f);
         dead = true;
+        deathSound.Play();
     }
 
     // Ponownie zaladowanie sceny 

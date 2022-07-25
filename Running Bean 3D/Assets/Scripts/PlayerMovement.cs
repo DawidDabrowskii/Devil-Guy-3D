@@ -9,8 +9,10 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] float Jumpforce = 5f;
     [SerializeField] Transform groundCheck;
     [SerializeField] LayerMask ground;
+    [SerializeField] AudioSource jumpSound;
 
     public Animator anim;
+
     // Przy 'void Start' wzywamy rb, aby pozniej za kazdym razem nie powtarzac calosci
     private void Start()
     { 
@@ -24,7 +26,6 @@ public class PlayerMovement : MonoBehaviour
         float verticalInput = Input.GetAxis("Vertical");
 
         rb.velocity = new Vector3 (horizontalInput * movementSpeed, rb.velocity.y, verticalInput * movementSpeed);
-
 
         // uruchomienie animacji biegu, gdy jest input
 
@@ -42,10 +43,11 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    // Tworzymy metode skoku, aby bylo czytelniej/latwiej i szybciej przywolac
+    // Tworzymy metode skoku, aby bylo czytelniej/latwiej i szybciej przywolac. Dodajemy rowniez dzwiek przy kazdym skoku
     private void Jump()
     {
         rb.velocity = new Vector3(rb.velocity.x, Jumpforce, rb.velocity.z);
+        jumpSound.Play();
     }
 
     // W przypadku kolizji z glowa 'enemy' chcemy, aby caly obiekt byl zniszczony, nie tylko glowa i przywolujemy skok, aby po uderzeniu w glowe 'enemy' wykonac skok
