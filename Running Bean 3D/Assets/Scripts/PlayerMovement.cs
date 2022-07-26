@@ -10,6 +10,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] Transform groundCheck;
     [SerializeField] LayerMask ground;
     [SerializeField] AudioSource jumpSound;
+    [SerializeField] float rotationSpeed;
 
     public Animator anim;
 
@@ -41,6 +42,15 @@ public class PlayerMovement : MonoBehaviour
         {
             Jump();
         }
+
+        // rotacja gracza, gdy sie rusza
+
+        if (rb.velocity != Vector3.zero)
+        {
+            Quaternion toRotation = Quaternion.LookRotation(rb.velocity, Vector3.up);
+
+            transform.rotation = Quaternion.RotateTowards(transform.rotation, toRotation, rotationSpeed * Time.deltaTime);
+        }
     }
 
     // Tworzymy metode skoku, aby bylo czytelniej/latwiej i szybciej przywolac. Dodajemy rowniez dzwiek przy kazdym skoku
@@ -49,7 +59,7 @@ public class PlayerMovement : MonoBehaviour
         rb.velocity = new Vector3(rb.velocity.x, Jumpforce, rb.velocity.z);
         jumpSound.Play();
     }
-
+    
     // W przypadku kolizji z glowa 'enemy' chcemy, aby caly obiekt byl zniszczony, nie tylko glowa i przywolujemy skok, aby po uderzeniu w glowe 'enemy' wykonac skok
     private void OnCollisionEnter(Collision collision)
     {
@@ -68,4 +78,5 @@ public class PlayerMovement : MonoBehaviour
     {
         return Physics.CheckSphere(groundCheck.position, 0.1f, ground);
     }
+    
 }
